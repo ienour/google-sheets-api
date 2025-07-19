@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Kontak ke Google Sheets</title>
+</head>
+<body>
+  <h1>Form Kontak</h1>
+  <form id="formKontak">
+    <label>Nama: <input type="text" id="nama" required></label><br><br>
+    <label>Email: <input type="email" id="email" required></label><br><br>
+    <label>Pesan: <textarea id="pesan" required></textarea></label><br><br>
+    <button type="submit">Kirim</button>
+  </form>
+
+  <hr>
+
+  <h2>Data Terkirim</h2>
+  <ul id="dataList"></ul>
+
+  <script>
+    const pageKey = 'kontak'; // Key rahasia untuk backend (tidak mencantumkan ID spreadsheet)
+
+    const form = document.getElementById('formKontak');
+    const dataList = document.getElementById('dataList');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const rowData = [
+        document.getElementById('nama').value,
+        document.getElementById('email').value,
+        document.getElementById('pesan').value,
+      ];
+
+      const res = await fetch('/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rowData, pageKey })
+      });
+
+      if (res.ok) {
+        alert('Data berhasil dikirim!');
+        form.reset();
+        loadData(); // reload data
+      } else {
+        alert('Gagal kirim data!');
+      }
+    });
+
+    async function loadData() {
+      const res = await fetch(`/get?pageKey=${pageKey}`);
+      const data = await res.json();
+      dataList.innerHTML = '';
+      data.slice(1).forEach(row => {
+        const li = document.createElement('li');
+        li.textContent = `${row[0]} (${row[1]}): ${row[2]}`;
+        dataList.appendChild(li);
+      });
+    }
+
+    // Load data saat pertama kali dibuka
+    loadData();
+  </script>
+</body>
+</html>
