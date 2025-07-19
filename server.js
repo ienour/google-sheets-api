@@ -5,26 +5,31 @@ const path = require('path');
 const keys = require('./service-account.json');
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve file statis dari folder 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Autentikasi Google Sheets
 const auth = new google.auth.GoogleAuth({
   credentials: keys,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-// Konfigurasi spreadsheet berdasarkan halaman
+// Konfigurasi dinamis berdasarkan nama halaman
 const sheetConfig = {
   kontak: {
     spreadsheetId: '1aj3Fp1YxOUA5sJglPsT1FfhIJXCNTVji9-Cwz2R-Rf8',
     sheetName: 'Sheet1',
   },
-  // Tambahkan key lain jika perlu, misalnya:
+  // Tambahkan halaman tambahan di sini jika perlu
   // laporan: { spreadsheetId: '...', sheetName: '...' }
 };
 
-// Endpoint GET - membaca data berdasarkan pageKey
+// Endpoint GET - Membaca data
 app.get('/get', async (req, res) => {
   const pageKey = req.query.pageKey;
   const config = sheetConfig[pageKey];
@@ -42,12 +47,12 @@ app.get('/get', async (req, res) => {
 
     res.json(result.data.values);
   } catch (err) {
-    console.error(err);
+    console.error('Error GET:', err);
     res.status(500).send('Gagal membaca data');
   }
 });
 
-// Endpoint POST - menulis data berdasarkan pageKey
+// Endpoint POST - Menambahkan data
 app.post('/submit', async (req, res) => {
   const { rowData, pageKey } = req.body;
   const config = sheetConfig[pageKey];
@@ -69,12 +74,14 @@ app.post('/submit', async (req, res) => {
 
     res.send({ status: 'ok', updated: result.data.updates });
   } catch (err) {
-    console.error(err);
+    console.error('Error POST:', err);
     res.status(500).send('Gagal menulis data');
   }
 });
 
-// Jalankan server
-app.listen(3000, () => {
-  console.log('API berjalan di http://localhost:3000');
+// Jalankan server pada port yang sesuai (Render membutuhkan process.env.PORT)
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`API berjalan di http://localhost:${PORT}`);
 });
+
