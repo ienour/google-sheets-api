@@ -25,7 +25,8 @@
     .search-bar {
       display: flex;
       justify-content: center;
-      margin: 20px 0;
+      padding: 20px;
+      background-color: #2a2a2a;
     }
 
     .search-bar input[type="text"] {
@@ -48,20 +49,29 @@
 
     nav {
       display: flex;
-      justify-content: center;
-      margin-bottom: 40px;
+      padding: 10px 20px;
+      background-color: #2e2e2e;
+      gap: 15px;
     }
 
     nav a {
-      margin: 0 15px;
-      text-decoration: none;
+      padding: 10px 15px;
+      background-color: #3a3a3a;
       color: #ffd700;
+      text-decoration: none;
       font-weight: bold;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    nav a:hover {
+      background-color: #ffd700;
+      color: #000;
     }
 
     .container {
       max-width: 900px;
-      margin: 0 auto;
+      margin: 30px auto;
       padding: 20px;
       background-color: #2e2e2e;
       border-radius: 10px;
@@ -98,6 +108,7 @@
   </style>
 </head>
 <body>
+
   <header>
     <h1>Selamat Datang di Bastumbas</h1>
   </header>
@@ -108,10 +119,11 @@
   </div>
 
   <nav>
-    <a href="#">Beranda</a>
-    <a href="#">Produk</a>
-    <a href="#">Tentang Kami</a>
     <a href="/kontak.html">Kontak</a>
+    <a href="#">Menu2</a>
+    <a href="#">Menu3</a>
+    <a href="#">Menu4</a>
+    <a href="#">Menu5</a>
   </nav>
 
   <div class="container">
@@ -122,5 +134,6 @@
   <footer>
     &copy; 2025 Bastumbas. Semua hak dilindungi.
   </footer>
+
 </body>
 </html>
