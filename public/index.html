@@ -2,6 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Selamat Datang di Bastumbas</title>
   <style>
     * { box-sizing: border-box; }
@@ -110,10 +111,12 @@
       display: flex;
       justify-content: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     .search-bar input[type="text"] {
       width: 300px;
+      max-width: 90vw;
       padding: 10px;
       border: 1px solid #999;
       border-radius: 5px 0 0 5px;
@@ -133,7 +136,7 @@
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 20px;
       padding: 10px;
     }
@@ -283,6 +286,82 @@
       font-size: 14px;
       line-height: 1.4;
       padding-right: 5px;
+    }
+
+    /* Perbaikan untuk HP ukuran kecil */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+      }
+
+      .typewriter {
+        font-size: 16px;
+        text-align: center;
+      }
+
+      .cart-icon {
+        font-size: 20px;
+        margin-top: 5px;
+      }
+
+      .main-wrapper {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 10px;
+        left: 0;
+        border-radius: 0;
+        box-shadow: none;
+      }
+
+      .sidebar-hover-area {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 10px;
+      }
+
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+
+      .slider {
+        height: 120px;
+      }
+
+      .slide {
+        line-height: 120px;
+        font-size: 40px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .search-bar {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .search-bar input[type="text"],
+      .search-bar button {
+        width: 100%;
+        border-radius: 5px;
+      }
     }
   </style>
 </head>
