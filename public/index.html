@@ -5,85 +5,94 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Selamat Datang di Bastumbas</title>
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #ffffff;
       color: #333;
     }
+
+    /* ===== HEADER ===== */
     header {
-      background: #4CAF50;
-      color: white;
-      padding: 10px 15px;
       position: fixed;
       top: 0;
-      width: 100%;
-      z-index: 1000;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #f8f8f8;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1000;
     }
     header .logo {
-      font-size: 1.2em;
+      font-size: 20px;
       font-weight: bold;
     }
     header .icons {
       display: flex;
       align-items: center;
+      gap: 15px;
     }
-    header .icons .search-icon {
-      margin-right: 15px;
+    header .icons span {
+      font-size: 20px;
       cursor: pointer;
-      font-size: 1.2em;
     }
-    header .icons .cart {
+    header .cart-counter {
       position: relative;
-      cursor: pointer;
     }
-    header .icons .cart span {
+    header .cart-counter::after {
+      content: attr(data-count);
       position: absolute;
       top: -8px;
-      right: -8px;
+      right: -10px;
       background: red;
       color: white;
-      font-size: 0.7em;
-      padding: 2px 5px;
+      font-size: 12px;
+      padding: 2px 6px;
       border-radius: 50%;
     }
+
     main {
-      padding: 80px 15px 15px; /* biar tidak ketutup header fix */
+      padding: 80px 15px 20px;
     }
-    .product-grid {
+
+    /* ===== GRID PRODUK ===== */
+    .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 15px;
     }
-    .product {
+    .product-card {
+      background: #fafafa;
       border: 1px solid #ddd;
       border-radius: 8px;
-      padding: 10px;
-      background: #fafafa;
-      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
     .slider {
       position: relative;
       width: 100%;
       overflow: hidden;
-      border-radius: 8px;
     }
     .slides {
       display: flex;
-      transition: transform 0.3s ease-in-out;
+      transition: transform 0.3s ease;
     }
     .slides img {
       width: 100%;
-      height: 150px;
+      height: 180px;
       object-fit: cover;
       flex-shrink: 0;
       background: #ccc;
     }
-    .prev, .next {
+    .slider button {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -93,45 +102,106 @@
       padding: 5px 10px;
       cursor: pointer;
       border-radius: 50%;
-      opacity: 0;
-      transition: opacity 0.3s;
     }
-    .prev { left: 5px; }
-    .next { right: 5px; }
-    /* Default PC: panah muncul saat hover */
-    .slider:hover .prev, 
-    .slider:hover .next {
-      opacity: 1;
+    .slider button.prev { left: 5px; }
+    .slider button.next { right: 5px; }
+
+    .product-info {
+      padding: 10px;
+      flex: 1;
     }
-    /* HP: panah selalu terlihat */
-    @media (max-width: 768px) {
-      .prev, .next {
-        opacity: 1 !important;
-      }
-      .product-grid {
-        grid-template-columns: repeat(2, 1fr); /* hanya 2 produk per baris */
-      }
+    .product-info h3 {
+      margin: 0 0 5px;
+      font-size: 16px;
     }
-    .product h3 {
-      margin: 10px 0 5px;
-      font-size: 1em;
+    .product-info p {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #666;
     }
-    .product p {
-      margin: 5px 0;
-      font-size: 0.9em;
-    }
-    .product button {
-      background: #4CAF50;
+    .product-info button {
+      background: #28a745;
       color: white;
       border: none;
       padding: 8px 12px;
-      border-radius: 5px;
+      border-radius: 4px;
       cursor: pointer;
-      float: right;
     }
-    .product button:disabled {
-      background: #aaa;
-      cursor: not-allowed;
+
+    /* ===== POPUP ===== */
+    .popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+    .popup.active { display: flex; }
+    .popup-content {
+      background: #fff;
+      width: 90%;
+      max-width: 500px;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 90%;
+    }
+    .popup-slider {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+    .popup-slides {
+      display: flex;
+      transition: transform 0.3s ease;
+    }
+    .popup-slides img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #ccc;
+    }
+    .popup-slider button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+    .popup-slider button.prev { left: 5px; }
+    .popup-slider button.next { right: 5px; }
+    .popup-desc {
+      padding: 10px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .popup-close {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    /* ===== HP RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .slides img, .popup-slides img {
+        height: 160px;
+      }
+      .slider button, .popup-slider button {
+        display: block; /* selalu terlihat di HP */
+      }
     }
   </style>
 </head>
@@ -139,80 +209,140 @@
   <header>
     <div class="logo">Bastumbas</div>
     <div class="icons">
-      <div class="search-icon">🔍</div>
-      <div class="cart">🛒<span id="cart-count">0</span></div>
+      <span class="search">🔍</span>
+      <span class="cart-counter" id="cartCounter" data-count="0">🛒</span>
     </div>
   </header>
+
   <main>
-    <div class="product-grid">
-      <!-- Produk contoh -->
-      <div class="product">
-        <div class="slider" data-index="0">
+    <div class="grid">
+      <!-- CONTOH PRODUK -->
+      <div class="product-card" data-name="Produk 1" data-desc="Ini adalah deskripsi panjang produk 1. Bisa discroll di popup.">
+        <div class="slider">
           <div class="slides">
-            <img src="https://via.placeholder.com/200x150?text=1" onerror="this.style.background='#ccc';this.src='';">
-            <img src="https://via.placeholder.com/200x150?text=2" onerror="this.style.background='#ccc';this.src='';">
-            <img src="https://via.placeholder.com/200x150?text=3" onerror="this.style.background='#ccc';this.src='';">
+            <img src="https://via.placeholder.com/300x180?text=1" alt="">
+            <img src="https://via.placeholder.com/300x180?text=2" alt="">
+            <img src="https://via.placeholder.com/300x180?text=3" alt="">
           </div>
-          <button class="prev">&#10094;</button>
-          <button class="next">&#10095;</button>
+          <button class="prev">‹</button>
+          <button class="next">›</button>
         </div>
-        <h3>Produk A</h3>
-        <p>Harga: Rp 50.000</p>
-        <button onclick="addToCart(50000)">Tambah Keranjang</button>
+        <div class="product-info">
+          <h3>Produk 1</h3>
+          <p>Rp 50.000</p>
+          <button class="add-to-cart">Tambah ke Keranjang</button>
+        </div>
       </div>
 
-      <div class="product">
-        <div class="slider" data-index="0">
+      <div class="product-card" data-name="Produk 2" data-desc="Deskripsi produk 2 lebih panjang lagi agar bisa discroll di popup.">
+        <div class="slider">
           <div class="slides">
-            <img src="https://via.placeholder.com/200x150?text=1" onerror="this.style.background='#ccc';this.src='';">
+            <img src="https://via.placeholder.com/300x180?text=A" alt="">
           </div>
-          <button class="prev">&#10094;</button>
-          <button class="next">&#10095;</button>
+          <button class="prev">‹</button>
+          <button class="next">›</button>
         </div>
-        <h3>Produk B</h3>
-        <p>Harga: Rp 75.000</p>
-        <button onclick="addToCart(75000)">Tambah Keranjang</button>
+        <div class="product-info">
+          <h3>Produk 2</h3>
+          <p>Rp 75.000</p>
+          <button class="add-to-cart">Tambah ke Keranjang</button>
+        </div>
       </div>
     </div>
   </main>
 
+  <!-- POPUP -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <div class="popup-slider">
+        <div class="popup-slides"></div>
+        <button class="prev">‹</button>
+        <button class="next">›</button>
+      </div>
+      <div class="popup-desc"></div>
+      <button class="popup-close">Tutup</button>
+    </div>
+  </div>
+
   <script>
-    let cartCount = 0;
-
-    function addToCart(price) {
-      cartCount++;
-      document.getElementById("cart-count").textContent = cartCount;
-    }
-
-    document.querySelectorAll(".slider").forEach(slider => {
-      const slides = slider.querySelector(".slides");
-      const images = slides.querySelectorAll("img");
-      const prev = slider.querySelector(".prev");
-      const next = slider.querySelector(".next");
+    // === SLIDER PRODUK (grid) ===
+    document.querySelectorAll('.slider').forEach(slider => {
+      const slides = slider.querySelector('.slides');
+      const images = slides.querySelectorAll('img');
       let index = 0;
-      let startX = 0;
 
       function showSlide(i) {
         if (i < 0) i = images.length - 1;
         if (i >= images.length) i = 0;
         index = i;
-        slides.style.transform = `translateX(${-index * 100}%)`;
+        slides.style.transform = `translateX(${-i * 100}%)`;
       }
 
-      prev.addEventListener("click", () => showSlide(index - 1));
-      next.addEventListener("click", () => showSlide(index + 1));
+      slider.querySelector('.prev').addEventListener('click', () => showSlide(index - 1));
+      slider.querySelector('.next').addEventListener('click', () => showSlide(index + 1));
 
-      // Geser tangan (touch)
-      slides.addEventListener("touchstart", e => {
-        startX = e.touches[0].clientX;
-      });
-      slides.addEventListener("touchend", e => {
-        let endX = e.changedTouches[0].clientX;
-        if (endX < startX - 50) showSlide(index + 1); // geser kiri
-        if (endX > startX + 50) showSlide(index - 1); // geser kanan
+      // Swipe support (HP)
+      let startX = 0;
+      slides.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+      slides.addEventListener('touchend', e => {
+        let diff = e.changedTouches[0].clientX - startX;
+        if (diff > 50) showSlide(index - 1);
+        else if (diff < -50) showSlide(index + 1);
       });
 
       showSlide(0);
+    });
+
+    // === POPUP PRODUK ===
+    const popup = document.getElementById('popup');
+    const popupSlides = document.querySelector('.popup-slides');
+    const popupDesc = document.querySelector('.popup-desc');
+    let popupIndex = 0;
+
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (e.target.classList.contains('add-to-cart')) return; // klik tombol skip
+
+        popup.classList.add('active');
+        popupSlides.innerHTML = card.querySelector('.slides').innerHTML;
+        popupDesc.textContent = card.dataset.desc;
+
+        const imgs = popupSlides.querySelectorAll('img');
+        popupIndex = 0;
+        function showPopupSlide(i) {
+          if (i < 0) i = imgs.length - 1;
+          if (i >= imgs.length) i = 0;
+          popupIndex = i;
+          popupSlides.style.transform = `translateX(${-i * 100}%)`;
+        }
+        popup.querySelector('.prev').onclick = () => showPopupSlide(popupIndex - 1);
+        popup.querySelector('.next').onclick = () => showPopupSlide(popupIndex + 1);
+
+        // Swipe support popup
+        let startX = 0;
+        popupSlides.addEventListener('touchstart', ev => startX = ev.touches[0].clientX);
+        popupSlides.addEventListener('touchend', ev => {
+          let diff = ev.changedTouches[0].clientX - startX;
+          if (diff > 50) showPopupSlide(popupIndex - 1);
+          else if (diff < -50) showPopupSlide(popupIndex + 1);
+        });
+
+        showPopupSlide(0);
+      });
+    });
+
+    document.querySelector('.popup-close').addEventListener('click', () => {
+      popup.classList.remove('active');
+    });
+
+    // === KERANJANG ===
+    let cartCount = 0;
+    document.querySelectorAll('.add-to-cart').forEach(btn => {
+      btn.addEventListener('click', e => {
+        cartCount++;
+        document.getElementById('cartCounter').setAttribute('data-count', cartCount);
+        e.stopPropagation();
+      });
     });
   </script>
 </body>
