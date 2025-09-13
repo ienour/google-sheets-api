@@ -442,21 +442,38 @@
 }
 
     // === Fungsi bikin card produk dari data Spreadsheet ===
-  async function buatProdukDariDataAsync(p, index) {
-   const gambarArray = [p.gambar1, p.gambar2, p.gambar3].filter(Boolean);
+  async function buatProdukDariData(p, index) {
+   // Ambil gambar dari kolom F,G,H (misal p.gambar1, p.gambar2, p.gambar3)
+  const gambarArray = [];
+  if (p.gambar1) gambarArray.push(p.gambar1);
+  if (p.gambar2) gambarArray.push(p.gambar2);
+  if (p.gambar3) gambarArray.push(p.gambar3);
 
-  // ambil semua gambar dari Drive
-  const urls = await Promise.all(
-    gambarArray.map(id => getDriveImage(id))
-  );
+  const jumlahGambar = gambarArray.length || 1;
 
-  const jumlahGambar = urls.length || 1;
+  // Fungsi helper: ambil URL blob dari Google Drive ID
+  async function driveImageToUrl(fileId) {
+    try {
+      const res = await fetch(`https://drive.google.com/uc?export=download&id=${fileId}`);
+      if (!res.ok) throw new Error('Gagal fetch');
+      const blob = await res.blob();
+      // cek apakah benar image
+      if (!blob.type.startsWith('image/')) throw new Error('Bukan image');
+      return URL.createObjectURL(blob);
+    } catch (e) {
+      console.warn(`Gagal load gambar ID ${fileId}:`, e);
+      return 'https://via.placeholder.com/150?text=No+Image';
+    }
+  }
 
-  const slideHTML = urls.map((url, i) => `
-    <div class="slide${i===0?' active':''}" data-index="${i+1}">
-      <img src="${url}" style="width:100%;height:100%;object-fit:cover;" />
-    </div>
-  `).join('');
+  // Buat slide HTML dengan async
+  const slideHTMLs = await Promise.all(gambarArray.map(async (g, i) => {
+    const url = await driveImageToUrl(g);
+    return `<div class="slide${i===0?' active':''}" data-index="${i+1}">
+              <img src="${url}" style="width:100%;height:100%;object-fit:cover"/>
+            </div>`;
+  }));
+  const slideHTML = slideHTMLs.join('');
 
   // Tombol keranjang
   let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
@@ -496,17 +513,13 @@
 
     // === Loader produk dari server.js ===
    async function loadProduk() {
-  const res = await fetch('/api/produk');
-  const data = await res.json();
-  window.produkData = data;
-  const container = document.getElementById('product-grid');
-
-  const cards = await Promise.all(
-    data.map((p, i) => buatProdukDariDataAsync(p, i))
-  );
-
-  container.innerHTML = cards.join('');
-}
+     const container = document.getElementById('product-grid');
+    const htmls = [];
+    for (let i=0; i<data.length; i++) {
+    htmls.push(await buatProdukDariData(data[i], i));
+  }
+  container.innerHTML = htmls.join('');
+   }
     // panggil loadProduk agar data tampil
     loadProduk();
     function pindahSlide(event, btn, arah) {
