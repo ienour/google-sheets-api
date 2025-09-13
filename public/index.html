@@ -443,9 +443,9 @@
 
     // === Fungsi bikin card produk dari data Spreadsheet ===
   async function buatProdukDariDataAsync(p, index) {
-  // Ambil gambar dari kolom F,G,H (misal p.gambar1, p.gambar2, p.gambar3)
-  const gambarArray = [];
-   // ambil semua gambar dari Drive
+   const gambarArray = [p.gambar1, p.gambar2, p.gambar3].filter(Boolean);
+
+  // ambil semua gambar dari Drive
   const urls = await Promise.all(
     gambarArray.map(id => getDriveImage(id))
   );
