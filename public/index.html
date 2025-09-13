@@ -492,6 +492,8 @@
       try {
         const res = await fetch('/api/produk');
         const data = await res.json();
+         // simpan global supaya popup bisa akses
+        window.produkData = data;
         const container = document.getElementById('product-grid');
         container.innerHTML = data.map((p, i) => buatProdukDariData(p, i)).join('');
       } catch (err) {
