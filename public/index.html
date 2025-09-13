@@ -432,10 +432,6 @@
     // Ambil gambar dari kolom F,G,H, hanya cek ada isi
     const gambarArray = [p.gambar1, p.gambar2, p.gambar3].filter(g => g); // cukup cek truthy
     const jumlahGambar = gambarArray.length || 1; // minimal 1 slide
-    if (p.gambar1) gambarArray.push(p.gambar1);
-    if (p.gambar2) gambarArray.push(p.gambar2);
-    if (p.gambar3) gambarArray.push(p.gambar3);
-      const jumlahGambar = gambarArray.length || 1;
       const slideHTML = p.gambar.map((g, i) =>
        /* `<div class="slide${i===0?' active':''}" data-index="${i+1}">
           <img src="${g}" style="width:100%;height:100%;object-fit:cover;">
