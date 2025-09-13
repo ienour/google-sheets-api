@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
@@ -160,6 +160,8 @@
       overflow: hidden;
       background-color: #ccc;
       border-radius: 4px;
+      /* penting untuk gesture: beri tahu browser kita ingin handle horizontal swipe */
+      touch-action: pan-y;
     }
 
     .slide {
@@ -171,6 +173,7 @@
       background-color: #999;
       text-align: center;
       line-height: 150px;
+      user-select: none;
     }
 
     .slide.active { display: block; }
@@ -188,10 +191,11 @@
       z-index: 1;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.2s ease;
       border-radius: 4px;
     }
 
+    /* default behaviour: muncul saat hover (PC) */
     .slider:hover .panah { opacity: 1; pointer-events: auto; }
     .panah.prev { left: 5px; }
     .panah.next { right: 5px; }
@@ -299,11 +303,15 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .slider { height: 120px; }
       .slide { line-height: 120px; font-size: 40px; }
-      /* === tambahan: panah selalu muncul di HP === */
-      .slider button, .popup-slider button {
-        display: block !important;
-        opacity: 0.5 !important;  /* selalu transparan konsisten */
-        }  
+
+      /* panah selalu tampil di HP, lebih transparan & jangan berubah saat swipe */
+      .slider .panah {
+        opacity: 0.5;
+        pointer-events: auto;
+      }
+      .slider:hover .panah {
+        opacity: 0.5; /* override hover supaya tidak berubah */
+      }
     }
   </style>
 </head>
@@ -435,8 +443,11 @@
       slides[posisi-1].classList.add('active');
       slider.dataset.pos = posisi;
 
-      slider.querySelector('.panah.prev').style.display = posisi>1?'block':'none';
-      slider.querySelector('.panah.next').style.display = posisi<jumlah?'block':'none';
+      // show/hide tombol sesuai posisi (menggunakan inline style)
+      const prevBtn = slider.querySelector('.panah.prev');
+      const nextBtn = slider.querySelector('.panah.next');
+      if (prevBtn) prevBtn.style.display = posisi>1 ? 'block' : 'none';
+      if (nextBtn) nextBtn.style.display = posisi<jumlah ? 'block' : 'none';
     }
 
     function bukaPopup(id,jumlahGambar) {
@@ -457,36 +468,58 @@
       document.getElementById("popup").style.display="flex";
     }
     function tutupPopup(){ document.getElementById("popup").style.display="none"; }
-        // === SWIPE SUPPORT ===
-    function enableSwipe(slider) {
+
+    /* ========== SWIPE (delegated, lebih andal di HP) ========== */
+    (function() {
+      let activeSlider = null;
       let startX = 0;
-      let endX = 0;
+      let startY = 0;
+      let isMoving = false;
 
-      slider.addEventListener("touchstart", (e) => {
+      // touchstart: tangkap slider terdekat
+      document.addEventListener('touchstart', function(e) {
+        const s = e.target.closest('.slider');
+        if (!s) return;
+        activeSlider = s;
         startX = e.touches[0].clientX;
-      });
+        startY = e.touches[0].clientY;
+        isMoving = false;
+      }, { passive: true });
 
-      slider.addEventListener("touchend", (e) => {
-        endX = e.changedTouches[0].clientX;
-        let diffX = endX - startX;
+      // touchmove: jika horizontal lebih besar dari vertical => treat as swipe (prevent page scroll)
+      document.addEventListener('touchmove', function(e) {
+        if (!activeSlider) return;
+        const t = e.touches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        if (Math.abs(dx) > 10 && Math.abs(dx) > Math.abs(dy)) {
+          isMoving = true;
+          // hentikan scroll halaman saat swipe horizontal agar swipe terasa responsif
+          e.preventDefault();
+        }
+      }, { passive: false });
 
-        if (Math.abs(diffX) > 50) { 
-          const btn = slider.querySelector(diffX > 0 ? ".panah.prev" : ".panah.next");
-          if (btn && btn.style.display !== "none") {
-            pindahSlide(e, btn, diffX > 0 ? -1 : 1);
+      // touchend: hitung selisih, panggil pindahSlide jika melewati threshold
+      document.addEventListener('touchend', function(e) {
+        if (!activeSlider) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - startX;
+        const threshold = 50; // piksel minimal untuk dianggap swipe
+        if (isMoving && Math.abs(dx) > threshold) {
+          const direction = dx > 0 ? -1 : 1; // dx>0 => swipe kanan => prev, else next
+          const btn = activeSlider.querySelector(direction === 1 ? '.panah.next' : '.panah.prev');
+          if (btn && btn.style.display !== 'none') {
+            // buat event dummy untuk dipakai pindahSlide (agar event.stopPropagation masih jalan)
+            try { pindahSlide(e, btn, direction); } catch(err){ /* ignore */ }
           }
         }
-      });
-    }
+        activeSlider = null;
+        isMoving = false;
+      }, { passive: true });
 
-    // aktifkan swipe untuk semua slider produk
-    document.querySelectorAll(".slider").forEach(slider => {
-      enableSwipe(slider);
-    });
-
-    // aktifkan juga untuk popup
-    const popupSlider = document.getElementById("popup-slider");
-    enableSwipe(popupSlider);
+      // juga aktifkan untuk tombol panah yang mungkin baru dibuat setelah render (popup)
+      // — tidak perlu karena pindahSlide dipanggil via onclick inline, tapi kita menjaga konsistensi
+    })();
   </script>
 </body>
 </html>
