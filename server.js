@@ -33,6 +33,35 @@ const sheetConfig = {
   // laporan: { spreadsheetId: '...', sheetName: '...' }
 };
 
+// === ENDPOINT PRODUK ===
+app.get('/api/produk', async (req, res) => {
+  try {
+    const client = await auth.getClient();
+    const sheets = google.sheets({ version: 'v4', auth: client });
+
+    const cfg = sheetConfig.Produk;
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId: cfg.spreadsheetId,
+      range: `${cfg.sheetName}!A2:H`, // ambil mulai row 2
+    });
+
+    const rows = response.data.values || [];
+    const produk = rows.map(r => ({
+      id: r[0] || "",
+      kategori: r[1] || "",
+      item: r[2] || "",
+      deskripsi: r[3] || "",
+      stok: parseInt(r[4] || "0"),
+      gambar: [r[5], r[6], r[7]].filter(Boolean)
+    }));
+
+    res.json(produk);
+  } catch (err) {
+    console.error('Error ambil data produk:', err);
+    res.status(500).json({ error: 'Gagal mengambil data produk' });
+  }
+});
+/*
 // Endpoint GET - Membaca data
 app.get('/get', async (req, res) => {
   const pageKey = req.query.pageKey;
@@ -82,7 +111,7 @@ app.post('/submit', async (req, res) => {
     res.status(500).send('Gagal menulis data');
   }
 });
-
+*/
 // Jalankan server pada port yang sesuai (Render membutuhkan process.env.PORT)
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
