@@ -429,9 +429,9 @@
       Array.from({ length: 20 }, (_, i) => buatProduk(i + 1)).join('');
   */
     // === Fungsi bikin card produk dari data Spreadsheet ===
-    // Ambil gambar dari kolom F,G,H, hanya cek ada isi
-      // Ambil gambar dari kolom F,G,H, hanya cek ada isi
-        const gambarArray = [];
+   function buatProdukDariData(p, index) {
+  // Ambil gambar dari kolom F,G,H (misal p.gambar1, p.gambar2, p.gambar3)
+  const gambarArray = [];
   if (p.gambar1) gambarArray.push(p.gambar1);
   if (p.gambar2) gambarArray.push(p.gambar2);
   if (p.gambar3) gambarArray.push(p.gambar3);
@@ -447,39 +447,41 @@
     </div>`
   ).join('');
 
-      let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
-      if (p.stok === 0) {
-        if (p.preorder && p.preorder.toLowerCase() === "ya") {
-          buttonClass += " preorder";
-          buttonLabel = "Preorder";
-          buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
-        } else {
-          buttonClass += " disabled";
-          buttonLabel = "Stok Habis";
-          buttonAttr = "disabled";
-        }
-      } else {
-        buttonClass += " tambah";
-        buttonLabel = "Tambah ke Keranjang";
-        buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
-      }
-
-      return `
-        <div class='product-card' onclick="bukaPopup(${index},${jumlahGambar})">
-          <div class='slider' data-jumlah='${jumlahGambar}' data-pos='1'>
-            ${slideHTML}
-            <button class="panah prev" style="display:none;" onclick="pindahSlide(event,this,-1)">&lt;</button>
-            <button class="panah next" ${jumlahGambar>1?'':'style="display:none;"'} onclick="pindahSlide(event,this,1)">&gt;</button>
-          </div>
-          <div class='product-name'>${p.item}</div>
-          <div class='product-price-stock'>
-            <span style='color:green;'>Rp ${(p.harga||0).toLocaleString('id-ID')}</span>
-            <span>Stok: ${p.stok}</span>
-          </div>
-          <button class="${buttonClass}" ${buttonAttr}>${buttonLabel}</button>
-        </div>
-      `;
+  // Tombol keranjang
+  let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
+  if (p.stok === 0) {
+    if (p.preorder && p.preorder.toLowerCase() === "ya") {
+      buttonClass += " preorder";
+      buttonLabel = "Preorder";
+      buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
+    } else {
+      buttonClass += " disabled";
+      buttonLabel = "Stok Habis";
+      buttonAttr = "disabled";
     }
+  } else {
+    buttonClass += " tambah";
+    buttonLabel = "Tambah ke Keranjang";
+    buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
+  }
+
+  return `
+    <div class='product-card' onclick="bukaPopup(${index},${jumlahGambar})">
+      <div class='slider' data-jumlah='${jumlahGambar}' data-pos='1'>
+        ${slideHTML}
+        <button class="panah prev" style="display:none;" onclick="pindahSlide(event,this,-1)">&lt;</button>
+        <button class="panah next" ${jumlahGambar>1?'':'style="display:none;"'} onclick="pindahSlide(event,this,1)">&gt;</button>
+      </div>
+      <div class='product-name'>${p.item}</div>
+      <div class='product-price-stock'>
+        <span style='color:green;'>Rp ${(p.harga||0).toLocaleString('id-ID')}</span>
+        <span>Stok: ${p.stok}</span>
+      </div>
+      <button class="${buttonClass}" ${buttonAttr}>${buttonLabel}</button>
+    </div>
+  `;
+}
+
 
     // === Loader produk dari server.js ===
     async function loadProduk() {
