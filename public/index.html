@@ -440,11 +440,18 @@
 
   // Buat slide HTML (sementara tanpa gambar)
   const slideHTML = gambarArray.map((g, i) =>
+    /*
     `<div class="slide${i===0?' active':''}" data-index="${i+1}">
       <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
         Pic ${i+1}
       </div>
     </div>`
+    */
+    `<div class="slide${i===0?' active':''}" data-index="${i+1}">
+      <img src="https://drive.google.com/uc?export=view&id=${g}" 
+           style="width:100%;height:100%;object-fit:cover;" 
+           onerror="this.src='https://via.placeholder.com/150?text=No+Image'"/>
+  </div>`
   ).join('');
 
   // Tombol keranjang
