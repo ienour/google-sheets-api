@@ -383,7 +383,7 @@
       cartCount++;
       document.getElementById('cart-count').innerText = cartCount;
     }
-
+/*
     function buatProduk(i) {
       const jumlahGambar = Math.floor(Math.random() * 3) + 1;
       const stok = Math.floor(Math.random() * 21);
@@ -427,7 +427,62 @@
 
     document.getElementById("product-grid").innerHTML =
       Array.from({ length: 20 }, (_, i) => buatProduk(i + 1)).join('');
+  */
+    // === Fungsi bikin card produk dari data Spreadsheet ===
+    function buatProdukDariData(p, index) {
+      const jumlahGambar = p.gambar.length;
+      const slideHTML = p.gambar.map((g, i) =>
+        `<div class="slide${i===0?' active':''}" data-index="${i+1}">
+          <img src="${g}" style="width:100%;height:100%;object-fit:cover;">
+        </div>`
+      ).join('');
 
+      let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
+      if (p.stok === 0) {
+        if (p.preorder && p.preorder.toLowerCase() === "ya") {
+          buttonClass += " preorder";
+          buttonLabel = "Preorder";
+          buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
+        } else {
+          buttonClass += " disabled";
+          buttonLabel = "Stok Habis";
+          buttonAttr = "disabled";
+        }
+      } else {
+        buttonClass += " tambah";
+        buttonLabel = "Tambah ke Keranjang";
+        buttonAttr = `onclick="event.stopPropagation(); tambahKeranjang()"`;
+      }
+
+      return `
+        <div class='product-card' onclick="bukaPopup(${index},${jumlahGambar})">
+          <div class='slider' data-jumlah='${jumlahGambar}' data-pos='1'>
+            ${slideHTML}
+            <button class="panah prev" style="display:none;" onclick="pindahSlide(event,this,-1)">&lt;</button>
+            <button class="panah next" ${jumlahGambar>1?'':'style="display:none;"'} onclick="pindahSlide(event,this,1)">&gt;</button>
+          </div>
+          <div class='product-name'>${p.item}</div>
+          <div class='product-price-stock'>
+            <span style='color:green;'>Rp ${(p.harga||0).toLocaleString('id-ID')}</span>
+            <span>Stok: ${p.stok}</span>
+          </div>
+          <button class="${buttonClass}" ${buttonAttr}>${buttonLabel}</button>
+        </div>
+      `;
+    }
+
+    // === Loader produk dari server.js ===
+    async function loadProduk() {
+      try {
+        const res = await fetch('/api/produk');
+        const data = await res.json();
+        const container = document.getElementById('produkContainer');
+        container.innerHTML = data.map((p, i) => buatProdukDariData(p, i)).join('');
+      } catch (err) {
+        console.error('Gagal ambil produk:', err);
+      }
+    }
+    
     function pindahSlide(event, btn, arah) {
       event.stopPropagation();
       const slider = btn.closest('.slider');
