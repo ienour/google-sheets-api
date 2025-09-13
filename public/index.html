@@ -301,8 +301,8 @@
       .slide { line-height: 120px; font-size: 40px; }
       /* === tambahan: panah selalu muncul di HP === */
       .slider button, .popup-slider button {
-        display: block;
-        opacity: 0.5; /* transparan biar tidak nutupin gambar */
+        display: block !important;
+        opacity: 0.5 !important;  /* selalu transparan konsisten */
         }  
     }
   </style>
@@ -457,6 +457,36 @@
       document.getElementById("popup").style.display="flex";
     }
     function tutupPopup(){ document.getElementById("popup").style.display="none"; }
+        // === SWIPE SUPPORT ===
+    function enableSwipe(slider) {
+      let startX = 0;
+      let endX = 0;
+
+      slider.addEventListener("touchstart", (e) => {
+        startX = e.touches[0].clientX;
+      });
+
+      slider.addEventListener("touchend", (e) => {
+        endX = e.changedTouches[0].clientX;
+        let diffX = endX - startX;
+
+        if (Math.abs(diffX) > 50) { 
+          const btn = slider.querySelector(diffX > 0 ? ".panah.prev" : ".panah.next");
+          if (btn && btn.style.display !== "none") {
+            pindahSlide(e, btn, diffX > 0 ? -1 : 1);
+          }
+        }
+      });
+    }
+
+    // aktifkan swipe untuk semua slider produk
+    document.querySelectorAll(".slider").forEach(slider => {
+      enableSwipe(slider);
+    });
+
+    // aktifkan juga untuk popup
+    const popupSlider = document.getElementById("popup-slider");
+    enableSwipe(popupSlider);
   </script>
 </body>
 </html>
