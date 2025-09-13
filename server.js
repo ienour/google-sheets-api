@@ -52,7 +52,9 @@ app.get('/api/produk', async (req, res) => {
       item: r[2] || "",
       deskripsi: r[3] || "",
       stok: parseInt(r[4] || "0"),
-      gambar: [r[5], r[6], r[7]].filter(Boolean)
+      gambar: [r[5], r[6], r[7]].filter(Boolean),
+      harga: parseFloat(r[8] || "0"),
+      preorder: r[9] || "Tidak"
     }));
 
     res.json(produk);
