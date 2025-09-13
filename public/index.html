@@ -256,6 +256,21 @@
       font-size: 14px; line-height: 1.4;
       padding-right: 5px;
     }
+    .popup-content .slider {
+      width: 100%;
+      aspect-ratio: 1 / 1;   /* selalu kotak */
+      max-width: 400px;      /* biar nggak terlalu besar */
+      margin: 0 auto;
+    }
+    .popup-content .slide {
+      line-height: normal;    /* reset */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      background-color: #ccc;
+      height: 100%; 
+    }
 
     /* ======== HP MODE ======== */
     @media (max-width: 768px) {
