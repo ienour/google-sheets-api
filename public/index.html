@@ -431,8 +431,13 @@
     // === Fungsi bikin card produk dari data Spreadsheet ===
     // Ambil gambar dari kolom F,G,H, hanya cek ada isi
       // Ambil gambar dari kolom F,G,H, hanya cek ada isi
-        const gambarArray = [p.gambar1, p.gambar2, p.gambar3].filter(g => g); // cukup cek truthy
-        const jumlahGambar = gambarArray.length || 1; // minimal 1 slide
+         const gambarArray = [];
+      if (p.gambar1 && p.gambar1.trim()) gambarArray.push(p.gambar1);
+      if (p.gambar2 && p.gambar2.trim()) gambarArray.push(p.gambar2);
+      if (p.gambar3 && p.gambar3.trim()) gambarArray.push(p.gambar3);
+      if (gambarArray.length === 0) gambarArray.push("dummy"); // minimal 1 slide
+
+      const jumlahGambar = gambarArray.length;
 
         const slideHTML = gambarArray.map((g, i) =>
         `<div class="slide${i===0?' active':''}" data-index="${i+1}">
