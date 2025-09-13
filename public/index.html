@@ -428,31 +428,35 @@
     document.getElementById("product-grid").innerHTML =
       Array.from({ length: 20 }, (_, i) => buatProduk(i + 1)).join('');
   */
+    async function getDriveImage(fileId) {
+  try {
+    const response = await fetch(`https://drive.google.com/uc?export=download&id=${fileId}`);
+    if (!response.ok) throw new Error('Gagal fetch');
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob); // ini URL sementara untuk <img>
+    return url;
+  } catch (err) {
+    console.error(err);
+    return 'https://via.placeholder.com/150?text=No+Image'; // fallback
+  }
+}
+
     // === Fungsi bikin card produk dari data Spreadsheet ===
-   function buatProdukDariData(p, index) {
+  async function buatProdukDariDataAsync(p, index) {
   // Ambil gambar dari kolom F,G,H (misal p.gambar1, p.gambar2, p.gambar3)
   const gambarArray = [];
-  if (p.gambar1) gambarArray.push(p.gambar1);
-  if (p.gambar2) gambarArray.push(p.gambar2);
-  if (p.gambar3) gambarArray.push(p.gambar3);
+   // ambil semua gambar dari Drive
+  const urls = await Promise.all(
+    gambarArray.map(id => getDriveImage(id))
+  );
 
-  const jumlahGambar = gambarArray.length || 1;
+  const jumlahGambar = urls.length || 1;
 
-  // Buat slide HTML (sementara tanpa gambar)
-  const slideHTML = gambarArray.map((g, i) =>
-    /*
-    `<div class="slide${i===0?' active':''}" data-index="${i+1}">
-      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
-        Pic ${i+1}
-      </div>
-    </div>`
-    */
-    `<div class="slide${i===0?' active':''}" data-index="${i+1}">
-      <img src="https://drive.google.com/uc?export=view&id=${g}" 
-           style="width:100%;height:100%;object-fit:cover;" 
-           onerror="this.src='https://via.placeholder.com/150?text=No+Image'"/>
-  </div>`
-  ).join('');
+  const slideHTML = urls.map((url, i) => `
+    <div class="slide${i===0?' active':''}" data-index="${i+1}">
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover;" />
+    </div>
+  `).join('');
 
   // Tombol keranjang
   let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
@@ -491,18 +495,18 @@
 
 
     // === Loader produk dari server.js ===
-    async function loadProduk() {
-      try {
-        const res = await fetch('/api/produk');
-        const data = await res.json();
-         // simpan global supaya popup bisa akses
-        window.produkData = data;
-        const container = document.getElementById('product-grid');
-        container.innerHTML = data.map((p, i) => buatProdukDariData(p, i)).join('');
-      } catch (err) {
-        console.error('Gagal ambil produk:', err);
-      }
-    }
+   async function loadProduk() {
+  const res = await fetch('/api/produk');
+  const data = await res.json();
+  window.produkData = data;
+  const container = document.getElementById('product-grid');
+
+  const cards = await Promise.all(
+    data.map((p, i) => buatProdukDariDataAsync(p, i))
+  );
+
+  container.innerHTML = cards.join('');
+}
     // panggil loadProduk agar data tampil
     loadProduk();
     function pindahSlide(event, btn, arah) {
