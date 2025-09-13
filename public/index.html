@@ -299,6 +299,11 @@
       .product-grid { grid-template-columns: repeat(2, 1fr); }
       .slider { height: 120px; }
       .slide { line-height: 120px; font-size: 40px; }
+      /* === tambahan: panah selalu muncul di HP === */
+      .slider button, .popup-slider button {
+        display: block;
+        opacity: 0.5; /* transparan biar tidak nutupin gambar */
+        }  
     }
   </style>
 </head>
