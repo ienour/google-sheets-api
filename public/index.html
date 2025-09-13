@@ -431,32 +431,21 @@
     // === Fungsi bikin card produk dari data Spreadsheet ===
     // Ambil gambar dari kolom F,G,H, hanya cek ada isi
       // Ambil gambar dari kolom F,G,H, hanya cek ada isi
-         const gambarArray = [];
-      if (p.gambar1 && p.gambar1.trim()) gambarArray.push(p.gambar1);
-      if (p.gambar2 && p.gambar2.trim()) gambarArray.push(p.gambar2);
-      if (p.gambar3 && p.gambar3.trim()) gambarArray.push(p.gambar3);
-      if (gambarArray.length === 0) gambarArray.push("dummy"); // minimal 1 slide
+        const gambarArray = [];
+  if (p.gambar1) gambarArray.push(p.gambar1);
+  if (p.gambar2) gambarArray.push(p.gambar2);
+  if (p.gambar3) gambarArray.push(p.gambar3);
 
-      const jumlahGambar = gambarArray.length;
+  const jumlahGambar = gambarArray.length || 1;
 
-        const slideHTML = gambarArray.map((g, i) =>
-        `<div class="slide${i===0?' active':''}" data-index="${i+1}">
-            <div style="
-                width:100%;
-                height:100%;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                background:#f0f0f0;
-                font-weight:bold;
-                font-size:18px;
-                color:#555;
-                border:1px dashed #ccc;
-            ">
-                Pic ${i+1}
-            </div>
-        </div>`
-      ).join('');
+  // Buat slide HTML (sementara tanpa gambar)
+  const slideHTML = gambarArray.map((g, i) =>
+    `<div class="slide${i===0?' active':''}" data-index="${i+1}">
+      <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
+        Pic ${i+1}
+      </div>
+    </div>`
+  ).join('');
 
       let buttonClass = "add-to-cart-btn", buttonLabel = "", buttonAttr = "";
       if (p.stok === 0) {
