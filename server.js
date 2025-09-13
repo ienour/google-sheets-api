@@ -42,7 +42,7 @@ app.get('/api/produk', async (req, res) => {
     const cfg = sheetConfig.Produk;
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: cfg.spreadsheetId,
-      range: `${cfg.sheetName}!A2:H`, // ambil mulai row 2
+      range: `${cfg.sheetName}!A2:J`, // ambil mulai row 2
     });
 
     const rows = response.data.values || [];
