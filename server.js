@@ -25,6 +25,10 @@ const sheetConfig = {
     spreadsheetId: '1aj3Fp1YxOUA5sJglPsT1FfhIJXCNTVji9-Cwz2R-Rf8',
     sheetName: 'Sheet1',
   },
+  Produk: {
+    spreadsheetId: '1wYgtlK7N7vHF3jzwwfkdZuPpVbWuh0ZtMJT-V_whauY',
+    sheetName: 'Produk',
+  },
   // Tambahkan halaman tambahan di sini jika perlu
   // laporan: { spreadsheetId: '...', sheetName: '...' }
 };
