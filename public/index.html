@@ -429,9 +429,9 @@
       Array.from({ length: 20 }, (_, i) => buatProduk(i + 1)).join('');
   */
     // === Fungsi bikin card produk dari data Spreadsheet ===
-    function buatProdukDariData(p, index) {
-      // Ambil gambar dari kolom F,G,H (misal p.gambar1, p.gambar2, p.gambar3)
-    const gambarArray = [];
+    // Ambil gambar dari kolom F,G,H, hanya cek ada isi
+    const gambarArray = [p.gambar1, p.gambar2, p.gambar3].filter(g => g); // cukup cek truthy
+    const jumlahGambar = gambarArray.length || 1; // minimal 1 slide
     if (p.gambar1) gambarArray.push(p.gambar1);
     if (p.gambar2) gambarArray.push(p.gambar2);
     if (p.gambar3) gambarArray.push(p.gambar3);
@@ -443,7 +443,7 @@
         */
        `<div class="slide${i===0?' active':''}" data-index="${i+1}">
             <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">
-              Slide ${i+1}
+              Pic ${i+1}
             </div>
       </div>`
       ).join('');
