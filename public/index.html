@@ -488,7 +488,8 @@
         console.error('Gagal ambil produk:', err);
       }
     }
-    
+    // panggil loadProduk agar data tampil
+    loadProduk();
     function pindahSlide(event, btn, arah) {
       event.stopPropagation();
       const slider = btn.closest('.slider');
